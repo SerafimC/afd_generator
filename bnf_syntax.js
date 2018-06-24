@@ -1,16 +1,72 @@
+let fileService = require('./file_service');
+let utils = require('./utils')
+let aAFND = Array(0), aNT = Array(0), aT = Array(0);
+let file = 'input.txt';
 
+exports.ReadController = function (file) {
+    let cInput = fileService.open(file)
+    var aLn = ''
+    
+    for (let i = 0; i < cInput.length; i++){
+        for(let j = 0; j < cInput[i].length; j++){
+            aLn += cInput[i][j]
+        }
+        this.bnf_syntax(aLn)
+    }
+    // this.setTransitions(aAFND, aNT, aT)
+};
 
-function bnf_syntax(){
-    let cGr1 = '<S>::= a<A> |b<B> | ε ' // Line with grammar rule
-    let aLn, aAFND = Array(), aNT = Array(0), aT = Array(0)
-    let nI, nJ, nRule = 0, nSymbol = 0
-    let oRes = {}
-    let lDefinition = false
+exports.setTransitions = function(aAFND, aNT, aT){
+    
+    // Defines aANFD table
+    for(let nI = 0; nI < aNT.length; nI++){
+        aAFND.push(Array(0))
+        for(nJ = 0; nJ < aT.length; nJ++){
+            aAFND[nI].push('ERROR')
+        }
+    }
 
-    aLn = cGr1.split('')
+    // // Read definition
+    function read_definition(aLn, nI){
+        let oRes = {}
+        if(aLn[nI] == '<'){ 
+            oRes = ready_rule(aLn, nI)
+            nI = oRes.nI
+            aAFND[nRule][nSymbol] = aNT.indexOf(oRes.ruleName)
+        }
+        else if(aLn[nI] != '|'){
+            oRes = read_symbol(aLn, nI)
+            nI = oRes.nI
+            nSymbol = aT.indexOf(oRes.symbolName)
+        }
+        return {nI}
+    }
 
-    // Defines aNT and aT
+    // Defines transitions rules
     for(nI = 0; nI < aLn.length; nI++){
+
+        // Found “equal by definition” symbol 
+        if(aLn[nI] == ':' && aLn[nI+1] == ':' && aLn[nI+2] == '='){
+            nI = nI + 3
+            lDefinition = true
+        }
+        else if(lDefinition){  // Navigates throw the definition of the symbol          
+            oRes = read_definition(aLn, nI)
+            nI = oRes.nI
+        } 
+    }
+}
+
+/**
+ * Loads the AFND table from a line with grammar rule
+ * Sets the rules transitions
+ * */ 
+exports.bnf_syntax = function(aLn){
+    let nJ, nRule = 0, nSymbol = 0
+    let oRes = {}
+    
+    // Defines aNT and aT
+    for(let nI = 0; nI < aLn.length; nI++){
 
         // Found “equal by definition” symbol
         if(aLn[nI] == ':' && aLn[nI+1] == ':' && aLn[nI+2] == '='){
@@ -27,47 +83,9 @@ function bnf_syntax(){
         }      
     }
 
-    // Defines aANFD table
-    for(nI = 0; nI < aNT.length; nI++){
-        aAFND.push(Array(0))
-        for(nJ = 0; nJ < aNT.length; nJ++){
-            aAFND[nI].push(99)
-        }
-    }
-
-    // Defines transitions rules
-    for(nI = 0; nI < aLn.length; nI++){
-
-        // Found “equal by definition” symbol 
-        if(aLn[nI] == ':' && aLn[nI+1] == ':' && aLn[nI+2] == '='){
-            nI = nI + 3
-            lDefinition = true
-        }
-        else if(lDefinition){  // Navigates throw the definition of the symbol          
-            oRes = read_definition(aLn, nI)
-            nI = oRes.nI
-        } 
-    }
-
-    function read_definition(aLn, nI){
-        let oRes = {}
-        if(aLn[nI] == '<'){ 
-            oRes = ready_rule(aLn, nI)
-            nI = oRes.nI
-            aAFND[nRule][nSymbol] = aNT.indexOf(oRes.ruleName)
-        }
-        else if(aLn[nI] != '|'){
-            oRes = read_symbol(aLn, nI)
-            nI = oRes.nI
-            nSymbol = aT.indexOf(oRes.symbolName)
-        }
-        return {nI}
-    }
-
     // Ready line and saves the terminals on aT
     function read_symbol(aLn, nI){
         let symbolName = ''
-        let nJ
         
         while(aLn[nI] == '' && aLn[nI] == ' '){
             nI++
@@ -75,8 +93,18 @@ function bnf_syntax(){
 
         symbolName = aLn[nI]
 
-        if(!check_existence(symbolName, aT) && !Empty(symbolName)){ // Checks if symbol exists
+        if(!utils.check_existence(symbolName, aT) && !utils.Empty(symbolName)){ // Checks if symbol exists
             aT.push(symbolName)
+        }
+        for(let nJ = 0; nJ < aAFND.length; nJ++){
+            if(!utils.Empty(symbolName) && !utils.check_existence(symbolName, aAFND[nJ].map(
+                function (el) {
+                    return el.symbolName
+                })
+                )
+            ){
+                aAFND[nJ].push({symbolName: symbolName, transition: 'ERROR'})
+            }
         }
 
         return {nI, symbolName}
@@ -85,7 +113,6 @@ function bnf_syntax(){
     // Ready line and saves the non-terminals on aNT
     function ready_rule(aLn, nI){
         let ruleName = ''
-        let nJ
         
         nI++
         while(aLn[nI] != '>' && nI < aLn.length){
@@ -93,35 +120,18 @@ function bnf_syntax(){
             nI++
         }
 
-        if(!check_existence(ruleName, aNT)){ // Checks if rule exists
+        if(!utils.check_existence(ruleName, aNT)){ // Checks if rule exists
             aNT.push(ruleName)
+            aAFND.push(Array(0))
         }
 
         return {nI, ruleName}
-    }
-
-    // Verify if cName exists on aDT
-    // Returns true or false
-    function check_existence(cName, aDt){
-        let lFound = false
-
-        for(nJ = 0; nJ < aDt.length; nJ++){
-            if(cName == aDt[nJ])
-                lFound = true
-        }
-
-        return lFound
-    }        
- 
-    // Verifys if 'any' is empty ('' or ' ')
-    function Empty(any){
-        if(any == '' || any == ' ')
-            return true
-        else
-            return false
-    }
-
-    console.log(aNT)
-    console.log(aT)
-    console.log(aAFND)
+    }   
 }
+
+// EXECUTION
+this.ReadController(file)
+// console.log(aNT)
+// console.log(aT)
+// console.log(aAFND)
+utils.printAF(aAFND, aT, aNT)
