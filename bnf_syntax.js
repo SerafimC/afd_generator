@@ -28,6 +28,7 @@ exports.ReadController = function (file) {
         }
         aLn= ''
     }
+    add_finalState()
 };
 
 /**
@@ -81,7 +82,11 @@ function bnf_syntax (aLn){
                 )
             ){
                 let transition = ready_transition(aLn, nI)
-                if(oCurrentRule.ruleName == aNT[nJ]){ 
+                if(oCurrentRule.ruleName == aNT[nJ]){
+                    if(symbolName == 'ε') {
+                        symbolName = ''
+                        transition = 'END'
+                    }
                     aAFND[nJ].push({symbolName: symbolName, transition: transition})
                 }
             }
@@ -130,18 +135,28 @@ function bnf_syntax (aLn){
 /**
  * Reads a given tokens and adds to AFND
  */
+
 function read_token (aLn){
     for(let nI = 0; nI <= aLn.length; nI++){
         aT.push(''+aLn[nI]+'')
         aNT.push(''+(aNT.length)+'')
         aAFND.push(Array(0))
         if(nI == aLn.length){
-            aAFND[(aAFND.length-1)].push({symbolName: 'ε', transition: 'ERROR'})
+            aAFND[(aAFND.length-1)].push({symbolName: '', transition: 'END'})
         } else {
             aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length)+''})
         }
     }
 }
+
+/**
+ * Creates the final state END
+ */
+function add_finalState(){
+    aNT.push('END')
+    aAFND.push([{symbolName: 'ε', transition: ''}])
+}
+
 // EXECUTION
 this.ReadController(file)
 // console.log(aNT)
