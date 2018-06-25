@@ -1,17 +1,31 @@
 const fileService = require('./file_service');
 const utils = require('./utils')
 const file = 'input.txt';
+const invalidLine = '☨'
 let aAFND = Array(0), aNT = Array(0), aT = Array(0);
 
+/**
+ * Read Controller that commands if a token should be read or a grammar
+ */
 exports.ReadController = function (file) {
     let cInput = fileService.open(file)
+    let lReadTokens = true
     var aLn = ''
     
     for (let i = 0; i < cInput.length; i++){
         for(let j = 0; j < cInput[i].length; j++){
             aLn += cInput[i][j]
         }
-        bnf_syntax(aLn)
+        
+        if(aLn[0] == invalidLine){
+            lReadTokens = false
+        }    
+        if(lReadTokens){
+            read_token(aLn)
+        } else if(aLn != invalidLine){
+            console.log(aLn)
+            bnf_syntax(aLn)
+        }
         aLn= ''
     }
 };
@@ -113,9 +127,20 @@ function bnf_syntax (aLn){
     }
 }
 
+/**
+ * Reads a given tokens and adds to AFND
+ */
+function read_token (aLn){
+    for(let nI = 0; nI < aLn.length; nI++){
+        aT.push(''+aLn[nI]+'')
+        aNT.push(''+(aNT.length)+'')
+        aAFND.push(Array(0))
+        aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length-1)+''})
+    }
+}
 // EXECUTION
 this.ReadController(file)
-console.log(aNT)
+// console.log(aNT)
 // console.log(aT)
 // console.log(aAFND)
 utils.printAF(aAFND, aT, aNT)
