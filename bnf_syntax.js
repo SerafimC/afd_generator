@@ -135,7 +135,7 @@ function read_token (aLn){
         aT.push(''+aLn[nI]+'')
         aNT.push(''+(aNT.length)+'')
         aAFND.push(Array(0))
-        aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length-1)+''})
+        aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length)+''})
     }
 }
 // EXECUTION
