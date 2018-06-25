@@ -131,11 +131,15 @@ function bnf_syntax (aLn){
  * Reads a given tokens and adds to AFND
  */
 function read_token (aLn){
-    for(let nI = 0; nI < aLn.length; nI++){
+    for(let nI = 0; nI <= aLn.length; nI++){
         aT.push(''+aLn[nI]+'')
         aNT.push(''+(aNT.length)+'')
         aAFND.push(Array(0))
-        aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length)+''})
+        if(nI == aLn.length){
+            aAFND[(aAFND.length-1)].push({symbolName: 'ε', transition: 'ERROR'})
+        } else {
+            aAFND[(aAFND.length-1)].push({symbolName: ''+aLn[nI]+'', transition: ''+(aNT.length)+''})
+        }
     }
 }
 // EXECUTION
