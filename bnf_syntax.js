@@ -1,7 +1,7 @@
-let fileService = require('./file_service');
-let utils = require('./utils')
+const fileService = require('./file_service');
+const utils = require('./utils')
+const file = 'input.txt';
 let aAFND = Array(0), aNT = Array(0), aT = Array(0);
-let file = 'input.txt';
 
 exports.ReadController = function (file) {
     let cInput = fileService.open(file)
@@ -11,58 +11,16 @@ exports.ReadController = function (file) {
         for(let j = 0; j < cInput[i].length; j++){
             aLn += cInput[i][j]
         }
-        this.bnf_syntax(aLn)
+        bnf_syntax(aLn)
+        aLn= ''
     }
-    // this.setTransitions(aAFND, aNT, aT)
 };
-
-exports.setTransitions = function(aAFND, aNT, aT){
-    
-    // Defines aANFD table
-    for(let nI = 0; nI < aNT.length; nI++){
-        aAFND.push(Array(0))
-        for(nJ = 0; nJ < aT.length; nJ++){
-            aAFND[nI].push('ERROR')
-        }
-    }
-
-    // // Read definition
-    function read_definition(aLn, nI){
-        let oRes = {}
-        if(aLn[nI] == '<'){ 
-            oRes = ready_rule(aLn, nI)
-            nI = oRes.nI
-            aAFND[nRule][nSymbol] = aNT.indexOf(oRes.ruleName)
-        }
-        else if(aLn[nI] != '|'){
-            oRes = read_symbol(aLn, nI)
-            nI = oRes.nI
-            nSymbol = aT.indexOf(oRes.symbolName)
-        }
-        return {nI}
-    }
-
-    // Defines transitions rules
-    for(nI = 0; nI < aLn.length; nI++){
-
-        // Found “equal by definition” symbol 
-        if(aLn[nI] == ':' && aLn[nI+1] == ':' && aLn[nI+2] == '='){
-            nI = nI + 3
-            lDefinition = true
-        }
-        else if(lDefinition){  // Navigates throw the definition of the symbol          
-            oRes = read_definition(aLn, nI)
-            nI = oRes.nI
-        } 
-    }
-}
 
 /**
  * Loads the AFND table from a line with grammar rule
  * Sets the rules transitions
  * */ 
-exports.bnf_syntax = function(aLn){
-    let nJ, nRule = 0, nSymbol = 0
+function bnf_syntax (aLn){
     let oRes = {}
     
     // Defines aNT and aT
@@ -86,6 +44,7 @@ exports.bnf_syntax = function(aLn){
     // Ready line and saves the terminals on aT
     function read_symbol(aLn, nI){
         let symbolName = ''
+        let oCurrentRule = ready_rule(aLn, 0)
         
         while(aLn[nI] == '' && aLn[nI] == ' '){
             nI++
@@ -93,9 +52,13 @@ exports.bnf_syntax = function(aLn){
 
         symbolName = aLn[nI]
 
-        if(!utils.check_existence(symbolName, aT) && !utils.Empty(symbolName)){ // Checks if symbol exists
+        // Add the symbol to terminals list (aT)
+        if(!utils.check_existence(symbolName, aT) && !utils.Empty(symbolName)){ 
             aT.push(symbolName)
         }
+
+        // For each element of the AFNF, verifys if symbol already exists
+        // If doesnt, add it
         for(let nJ = 0; nJ < aAFND.length; nJ++){
             if(!utils.Empty(symbolName) && !utils.check_existence(symbolName, aAFND[nJ].map(
                 function (el) {
@@ -103,7 +66,10 @@ exports.bnf_syntax = function(aLn){
                 })
                 )
             ){
-                aAFND[nJ].push({symbolName: symbolName, transition: 'ERROR'})
+                let transition = ready_transition(aLn, nI)
+                if(oCurrentRule.ruleName == aNT[nJ]){ 
+                    aAFND[nJ].push({symbolName: symbolName, transition: transition})
+                }
             }
         }
 
@@ -127,11 +93,29 @@ exports.bnf_syntax = function(aLn){
 
         return {nI, ruleName}
     }   
+
+    // Reads the previous or next transition state
+    function ready_transition(aLn, nI){
+        let destinyState = 'ERROR'
+
+        if(aLn[nI-1] == '>'){
+            destinyState = ''
+            for(let nJ = nI-2; aLn[nJ] != '<'; nJ--){
+                destinyState = aLn[nJ] + destinyState
+            }
+        } else if (aLn[nI+1] == '<'){
+            destinyState = ''
+            for(let nJ = nI+2; aLn[nJ] != '>'; nJ++){
+                destinyState = destinyState + aLn[nJ]
+            }
+        }
+        return destinyState
+    }
 }
 
 // EXECUTION
 this.ReadController(file)
-// console.log(aNT)
+console.log(aNT)
 // console.log(aT)
 // console.log(aAFND)
 utils.printAF(aAFND, aT, aNT)

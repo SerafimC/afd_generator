@@ -1,4 +1,4 @@
-<S>::= a<A>|b<S>
-<A>::= a<A>|b<B>
-<B>::= a<C>|b<S>
-<C>::= a<C>|b<C>|ε
+<SS>::= a<AA>|b<SS>
+<AA>::= a<AA>|b<BB>
+<BB>::= a<CC>|b<SS>
+<CC>::= a<CC>|b<CC>|ε
