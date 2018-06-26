@@ -2,7 +2,7 @@ if
 else
 then
 ☨
-<SS>::= a<AA>|b<SS>
+<S>::= a<AA>|b<S>
 <AA>::= a<AA>|b<BB>
-<BB>::= a<CC>|b<SS>
+<BB>::= a<CC>|b<S>
 <CC>::= a<CC>|b<CC>|ε

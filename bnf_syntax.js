@@ -2,7 +2,7 @@ const fileService = require('./file_service');
 const utils = require('./utils')
 const file = 'input.txt';
 const invalidLine = '☨'
-let aAFND = Array(0),
+let aAFND = Array(0), // Starts with the initial state
     aNT = Array(0),
     aT = Array(0);
 
@@ -74,23 +74,7 @@ function bnf_syntax(aLn) {
             aT.push(symbolName)
         }
 
-        // For each element of the AFNF, verifys if symbol already exists
-        // If doesnt, add it
-        for (let nJ = 0; nJ < aAFND.length; nJ++) {
-            if (!utils.Empty(symbolName) && !utils.check_existence(symbolName, aAFND[nJ].map(
-                    function(el) {
-                        return el.symbolName
-                    }))) {
-                let transition = ready_transition(aLn, nI)
-                if (oCurrentRule.ruleName == aNT[nJ]) {
-                    if (symbolName == 'ε') {
-                        symbolName = ''
-                        transition = 'END'
-                    }
-                    aAFND[nJ].push({ symbolName: symbolName, transition: transition })
-                }
-            }
-        }
+        save_transition_AF(oCurrentRule, symbolName, nI)
 
         return { nI, symbolName }
     }
@@ -113,6 +97,35 @@ function bnf_syntax(aLn) {
         return { nI, ruleName }
     }
 
+    // For each element of the AF, verifys if symbol already exists
+    // If doesnt, save it
+    function save_transition_AF(oCurrentRule, symbolName, nI) {
+        for (let nJ = 0; nJ < aAFND.length; nJ++) {
+            if (!utils.Empty(symbolName) && !utils.check_existence(symbolName, aAFND[nJ].map(
+                    function(el) {
+                        return el.symbolName
+                    }))) {
+                let transition = ready_transition(aLn, nI)
+
+                if (oCurrentRule.ruleName == aNT[nJ]) {
+                    if (symbolName == 'ε') {
+                        symbolName = ''
+                        transition = 'END'
+                    }
+                    switch (oCurrentRule.ruleName) {
+                        case 'S':
+                            aAFND[0].push({ symbolName: symbolName, transition: transition })
+                            break;
+                        default:
+                            aAFND[nJ].push({ symbolName: symbolName, transition: transition })
+                            break;
+                    }
+
+                }
+            }
+        }
+    }
+
     // Reads the previous or next transition state
     function ready_transition(aLn, nI) {
         let destinyState = 'ERROR'
@@ -128,6 +141,10 @@ function bnf_syntax(aLn) {
                 destinyState = destinyState + aLn[nJ]
             }
         }
+
+        if (destinyState == 'S') {
+            return '0'
+        }
         return destinyState
     }
 }
@@ -142,11 +159,18 @@ function read_token(aLn) {
         aNT.push('' + (aNT.length) + '')
         aAFND.push(Array(0))
 
-        // The last symbol should transit to END state
-        if (nI == aLn.length) {
-            aAFND[(aAFND.length - 1)].push({ symbolName: '', transition: 'END' })
-        } else {
-            aAFND[(aAFND.length - 1)].push({ symbolName: '' + aLn[nI] + '', transition: '' + (aNT.length) + '' })
+        switch (nI) {
+            case 0:
+                aAFND[0].push({ symbolName: '' + aLn[nI] + '', transition: '' + (aNT.length) + '' })
+                break;
+            case aLn.length:
+                aAFND[(aAFND.length - 1)].push({ symbolName: '', transition: 'END' })
+                break;
+            default:
+                aAFND[(aAFND.length - 1)].push({
+                    symbolName: '' + aLn[nI] + '',
+                    transition: '' + (aNT.length) + ''
+                })
         }
     }
 }
