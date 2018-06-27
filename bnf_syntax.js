@@ -89,8 +89,12 @@ function bnf_syntax(aLn) {
             nI++
         }
 
-        if (!utils.check_existence(ruleName, aNT)) { // Checks if rule exists
-            aNT.push(ruleName)
+        if (ruleName == 'S') {
+            ruleName = 0
+        }
+
+        if (!utils.check_existence(ruleName, aNT.map(function(el) { return el.ruleName }))) { // Checks if rule exists
+            aNT.push({ ruleName: ruleName, isFinal: false })
             aAFND.push(Array(0))
         }
 
@@ -107,10 +111,11 @@ function bnf_syntax(aLn) {
                     }))) {
                 let transition = ready_transition(aLn, nI)
 
-                if (oCurrentRule.ruleName == aNT[nJ]) {
+                if (oCurrentRule.ruleName == aNT[nJ].ruleName) {
                     if (symbolName == 'ε') {
                         symbolName = ''
                         transition = 'END'
+                        aNT[nJ].isFinal = true
                     }
                     switch (oCurrentRule.ruleName) {
                         case 'S':
@@ -156,22 +161,33 @@ function read_token(aLn) {
     for (let nI = 0; nI <= aLn.length; nI++) {
 
         aT.push('' + aLn[nI] + '')
-        aNT.push('' + (aNT.length) + '')
-        aAFND.push(Array(0))
+
+        // creates the initial state
+        if (aAFND.length == 0) {
+            create_nonTerminal()
+        }
 
         switch (nI) {
             case 0:
                 aAFND[0].push({ symbolName: '' + aLn[nI] + '', transition: '' + (aNT.length) + '' })
                 break;
             case aLn.length:
+                create_nonTerminal()
                 aAFND[(aAFND.length - 1)].push({ symbolName: '', transition: 'END' })
+                aNT[(aAFND.length - 1)].isFinal = true;
                 break;
             default:
+                create_nonTerminal()
                 aAFND[(aAFND.length - 1)].push({
                     symbolName: '' + aLn[nI] + '',
                     transition: '' + (aNT.length) + ''
                 })
         }
+    }
+
+    function create_nonTerminal() {
+        aNT.push({ ruleName: aNT.length, isFinal: false })
+        aAFND.push(Array(0))
     }
 }
 
@@ -179,7 +195,7 @@ function read_token(aLn) {
  * Creates the final state 'END'
  */
 function add_finalState() {
-    aNT.push('END')
+    aNT.push({ ruleName: 'END', isFinal: true })
     aAFND.push([{ symbolName: 'ε', transition: '' }])
 }
 

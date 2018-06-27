@@ -25,7 +25,11 @@ exports.printAF = function(aAF, aT, aNT) {
     let cLn = ''
     fileService.clear('output.txt')
     for (let nI = 0; nI < aAF.length; nI++) {
-        cLn += '<' + aNT[nI] + '>' + ' ::= '
+        cLn += '<'
+        if (aNT[nI].isFinal) {
+            cLn += '*'
+        }
+        cLn += aNT[nI].ruleName + '>' + ' ::= '
         for (let nJ = 0; nJ < aAF[nI].length; nJ++) {
             cLn += aAF[nI][nJ].symbolName + '<' + aAF[nI][nJ].transition + '> | '
         }

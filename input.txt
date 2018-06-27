@@ -1,6 +1,6 @@
 if
 else
-then
+elseif
 ☨
 <S>::= a<AA>|b<S>
 <AA>::= a<AA>|b<BB>
