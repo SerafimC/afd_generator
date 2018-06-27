@@ -1,7 +1,9 @@
 const fileService = require('./file_service');
+const determiner = require('./determiner')
 const utils = require('./utils')
 const file = 'input.txt';
 const invalidLine = '☨'
+let aFD
 let aAFND = Array(0), // Starts with the initial state
     aNT = Array(0),
     aT = Array(0);
@@ -201,7 +203,8 @@ function add_finalState() {
 
 // EXECUTION
 this.ReadController(file)
+aFD = determiner.process(aAFND, aNT, aT)
     // console.log(aNT)
     // console.log(aT)
     // console.log(aAFND)
-utils.printAF(aAFND, aT, aNT)
+    // utils.printAF(aAFND, aT, aNT)

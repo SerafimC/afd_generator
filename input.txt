@@ -1,8 +1,5 @@
 if
+int
 else
 elseif
 ☨
-<S>::= a<AA>|b<S>
-<AA>::= a<AA>|b<BB>
-<BB>::= a<CC>|b<S>
-<CC>::= a<CC>|b<CC>|ε
