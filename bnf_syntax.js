@@ -106,13 +106,15 @@ function bnf_syntax(aLn) {
     // For each element of the AF, verifys if symbol already exists
     // If doesnt, save it
     function save_transition_AF(oCurrentRule, symbolName, nI) {
+        let symbolIndex
+        let transition
         for (let nJ = 0; nJ < aAFND.length; nJ++) {
-            if (!utils.Empty(symbolName) && !utils.check_existence(symbolName, aAFND[nJ].map(
-                    function(el) {
-                        return el.symbolName
-                    }))) {
-                let transition = ready_transition(aLn, nI)
+            symbolIndex = aAFND[nJ].findIndex(function(el) {
+                return el.symbolName == symbolName
+            })
+            transition = ready_transition(aLn, nI)
 
+            if (!utils.Empty(symbolName) && validate_transition(aAFND[nJ], symbolIndex, transition)) {
                 if (oCurrentRule.ruleName == aNT[nJ].ruleName) {
                     if (symbolName == 'ε') {
                         symbolName = ''
@@ -129,6 +131,14 @@ function bnf_syntax(aLn) {
                     }
 
                 }
+            }
+        }
+
+        function validate_transition(el, symbolIndex, transition) {
+            if (symbolIndex < 0) {
+                return true
+            } else {
+                return el[symbolIndex].transition != transition
             }
         }
     }
@@ -161,7 +171,6 @@ function bnf_syntax(aLn) {
  */
 function read_token(aLn) {
     for (let nI = 0; nI <= aLn.length; nI++) {
-
         aT.push('' + aLn[nI] + '')
 
         // creates the initial state

@@ -1,5 +1,8 @@
 if
 int
 else
-elseif
 ☨
+<S> ::= a<A>| a<B>
+<A> ::= a<C>| d<B>
+<B> ::= b<C>
+<C> ::= c<C>|ε

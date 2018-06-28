@@ -1,7 +1,7 @@
 const utils = require('./utils')
 
 exports.process = function(aAFND, aNT, aT) {
-    this.aAFD = aAFND;
+    var aAFD = aAFND;
     this.aNT = aNT;
     this.aT = aT;
 
@@ -33,19 +33,18 @@ exports.process = function(aAFND, aNT, aT) {
 
     function update_transitions(aTransitionRepeat, nI) {
         let newRule = ''
-        console.log(aTransitionRepeat)
+        let RuleTransitions = Array(0)
         for (let nL = 0; nL < aTransitionRepeat.length; nL++) {
             newRule += aTransitionRepeat[nL].transition
         }
-        console.log(newRule)
-            // this.aAFD[nI] =
-        aAFND.map(function(el) {
-            for (let nL = 0; nL < aTransitionRepeat.length; nL++) {
-                if (aTransitionRepeat[nL].symbolName == el.symbolName) {
-                    el.transition = newRule
-                }
-            }
-            return el
-        })
+        // console.log(newRule)
+
+        /* TODO: Return only symbol transition to aAFD */
+        // for (let nL = 0; nL < aTransitionRepeat.length; nL++) {
+        //     if (aTransitionRepeat[nL].symbolName == aAFND[nI][nM].symbolName) {
+        //         RuleTransitions.push({ symbolName: aAFND[nI][nM].symbolName, transition: aAFND[nI][nM].transition })
+        //     }
+        // }
+        aAFD[nI] = RuleTransitions
     }
 }
