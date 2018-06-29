@@ -26,7 +26,7 @@ exports.ReadController = function(file) {
         }
         if (lReadTokens) {
             read_token(aLn)
-        } else if (aLn != invalidLine) {
+        } else if (aLn != invalidLine && aLn.length > 0) {
             bnf_syntax(aLn)
         }
         aLn = ''

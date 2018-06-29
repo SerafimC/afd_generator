@@ -59,7 +59,7 @@ exports.process = function(aAFND, aNT, aT) {
 
     function add_newRule_transitions(aTransitionRepeat, nI) {
         let index = aAFD.length - 1
-        console.log(aTransitionRepeat)
+            // console.log(aTransitionRepeat)
         for (let nJ = 0; nJ < aTransitionRepeat.length; nJ++) {
             let AfID = aNT.findIndex((el) => el.ruleName == aTransitionRepeat[nJ].transition)
                 // console.log(aAFD[nI][AfID])

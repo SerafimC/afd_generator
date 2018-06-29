@@ -1,11 +1,4 @@
 if
+into
 int
-else
 ☨
-<S> ::= a<A>| a<B>
-<A> ::= a<C>| a<B> | d<B>
-<B> ::= b<C>
-<C> ::= c<C>|ε
-☨
-<S> ::= h<H>
-<H> ::= h<H>| ε
