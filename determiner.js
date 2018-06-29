@@ -49,19 +49,22 @@ exports.process = function(aAFND, aNT, aT) {
             }
         }
         RuleTransitions.push({ symbolName: aTransitionRepeat[0].symbolName, transition: newRule })
+        aAFD[nI] = RuleTransitions
         aNT.push({ ruleName: newRule, isFinal: false })
         aAFD.push(Array(0))
             // console.log(RuleTransitions)
-        aAFD[nI] = RuleTransitions
+
+        add_newRule_transitions(aTransitionRepeat, nI)
     }
 
-    function add_newRule_transitions(aTransitionRepeat) {
-        let index = aAFD.length
-
-        for (let nI = 0; nI < aTransitionRepeat.length; nI++) {
-            let AfID = aTransitionRepeat[nI].index
-            for (let nJ = 0; nJ < aAFND[AfID].length; nJ++) {
-                aAFD[index].push({ symbolName: aAFND[AfID][nJ].symbolName, transition: aAFND[AfID][nJ].transition })
+    function add_newRule_transitions(aTransitionRepeat, nI) {
+        let index = aAFD.length - 1
+        console.log(aTransitionRepeat)
+        for (let nJ = 0; nJ < aTransitionRepeat.length; nJ++) {
+            let AfID = aNT.findIndex((el) => el.ruleName == aTransitionRepeat[nJ].transition)
+                // console.log(aAFD[nI][AfID])
+            for (let nK = 0; nK < aAFD[AfID].length; nK++) {
+                aAFD[index].push({ symbolName: aAFD[AfID][nK].symbolName, transition: aAFD[AfID][nK].transition })
             }
         }
     }
