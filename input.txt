@@ -3,6 +3,6 @@ int
 else
 ☨
 <S> ::= a<A>| a<B>
-<A> ::= a<C>| d<B>
+<A> ::= a<C>| a<B> | d<B>
 <B> ::= b<C>
 <C> ::= c<C>|ε
