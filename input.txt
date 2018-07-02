@@ -1,4 +1,6 @@
 if
-into
-int
+else
+elseif
 ☨
+<S> ::= 1<A> 
+<A> ::= 1<A> | ε

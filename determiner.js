@@ -4,26 +4,31 @@ exports.process = function(aAFND, aNT, aT) {
     var aAFD = aAFND;
     this.aNT = aNT;
     this.aT = aT;
+    var determinize = true
 
-    for (let nI = 0; nI < aAFND.length; nI++) {
-        process_line(nI);
+    while (determinize) {
+        determinize = false
+        for (let nI = 0; nI < aAFD.length; nI++) {
+            process_line(nI);
+        }
     }
 
-    utils.printAF(aAFND, this.aT, this.aNT)
+    utils.printAF(aAFD, this.aT, this.aNT)
 
     function process_line(nI) {
         let aTransitionRepeat = Array(0)
-        for (let nJ = 0; nJ < aAFND[nI].length; nJ++) {
+        for (let nJ = 0; nJ < aAFD[nI].length; nJ++) {
 
-            aTransitionRepeat.push({ symbolName: aAFND[nI][nJ].symbolName, transition: aAFND[nI][nJ].transition, index: nJ })
+            aTransitionRepeat.push({ symbolName: aAFD[nI][nJ].symbolName, transition: aAFD[nI][nJ].transition, index: nJ })
 
-            for (let nK = nJ + 1; nK < aAFND[nI].length; nK++) {
-                if (aAFND[nI][nJ].symbolName == aAFND[nI][nK].symbolName) {
-                    aTransitionRepeat.push({ symbolName: aAFND[nI][nK].symbolName, transition: aAFND[nI][nK].transition, index: nK })
+            for (let nK = nJ + 1; nK < aAFD[nI].length; nK++) {
+                if (aAFD[nI][nJ].symbolName == aAFD[nI][nK].symbolName && !utils.Empty(aAFD[nI][nK].symbolName)) {
+                    aTransitionRepeat.push({ symbolName: aAFD[nI][nK].symbolName, transition: aAFD[nI][nK].transition, index: nK })
                 }
             }
 
             if (aTransitionRepeat.length > 1) {
+                determinize = true
                 update_transitions(aTransitionRepeat, nI)
             }
 
@@ -38,21 +43,16 @@ exports.process = function(aAFND, aNT, aT) {
             newRule += aTransitionRepeat[nL].transition + ','
         }
 
-        // for (let nL = 0; nL < aAFND[nI].length; nL++) {
-        //     if (!utils.check_existence(aAFND[nI][nL].symbolName, aTransitionRepeat.map((el) => el.symbolName))) {
-        //         RuleTransitions.push(aAFND[nI][nL])
-        //     }
-        // }
-        for (let nM = 0; nM < aAFND[nI].length; nM++) {
-            if (!utils.check_existence(aAFND[nI][nM].symbolName, aTransitionRepeat.map((el) => el.symbolName))) {
-                RuleTransitions.push({ symbolName: aAFND[nI][nM].symbolName, transition: aAFND[nI][nM].transition })
+        for (let nM = 0; nM < aAFD[nI].length; nM++) {
+            if (!utils.check_existence(aAFD[nI][nM].symbolName, aTransitionRepeat.map((el) => el.symbolName))) {
+                RuleTransitions.push({ symbolName: aAFD[nI][nM].symbolName, transition: aAFD[nI][nM].transition })
             }
         }
+        // console.log(RuleTransitions)
         RuleTransitions.push({ symbolName: aTransitionRepeat[0].symbolName, transition: newRule })
         aAFD[nI] = RuleTransitions
         aNT.push({ ruleName: newRule, isFinal: false })
         aAFD.push(Array(0))
-            // console.log(RuleTransitions)
 
         add_newRule_transitions(aTransitionRepeat, nI)
     }

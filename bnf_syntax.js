@@ -212,6 +212,7 @@ function add_finalState() {
 
 // EXECUTION
 this.ReadController(file)
+    // console.log(aAFND)
 aFD = determiner.process(aAFND, aNT, aT)
     // console.log(aNT)
     // console.log(aT)
