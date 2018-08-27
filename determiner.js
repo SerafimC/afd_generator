@@ -13,7 +13,11 @@ exports.process = function(aAFND, aNT, aT) {
         }
     }
 
-    utils.printAF(aAFD, this.aT, this.aNT)
+    return {
+        aAFD: aAFD,
+        aT: this.aT,
+        aNT: this.aNT
+    }
 
     function process_line(nI) {
         let aTransitionRepeat = Array(0)

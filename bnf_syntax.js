@@ -1,5 +1,6 @@
 const fileService = require('./file_service');
 const determiner = require('./determiner')
+const uselessKiller = require('./uselessKiller')
 const utils = require('./utils')
 const file = 'input.txt';
 const invalidLine = '☨'
@@ -212,9 +213,7 @@ function add_finalState() {
 
 // EXECUTION
 this.ReadController(file)
-    // console.log(aAFND)
-aFD = determiner.process(aAFND, aNT, aT)
-    // console.log(aNT)
-    // console.log(aT)
-    // console.log(aAFND)
-    // utils.printAF(aAFND, aT, aNT)
+
+AFD = determiner.process(aAFND, aNT, aT)
+AFD = uselessKiller.process(AFD.aAFD, AFD.aT, AFD.aNT)
+utils.printAF(AFD.aAFD, AFD.aT, AFD.aNT)
