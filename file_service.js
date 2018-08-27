@@ -8,10 +8,11 @@ exports.open = function(file) {
     aRs = aCont.split('')
 
     for (i = 0; i < aRs.length; i++) {
-        if (aRs[i] == '\r' && aRs[i + 1] == '\n') {
+
+        if (aRs[i] == '\n') {
             aTxt.push(aLn)
             aLn = Array(0)
-            i = i + 2;
+            i = i + 1;
         }
         aLn.push(aRs[i])
     }

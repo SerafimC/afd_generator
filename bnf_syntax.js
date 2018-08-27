@@ -21,7 +21,6 @@ exports.ReadController = function(file) {
         for (let j = 0; j < cInput[i].length; j++) {
             aLn += cInput[i][j]
         }
-
         if (aLn[0] == invalidLine) {
             lReadTokens = false
         }
