@@ -1,6 +1,7 @@
 const fileService = require('./file_service');
 const determiner = require('./determiner')
 const uselessKiller = require('./uselessKiller')
+const errorState = require('./ErrorState')
 const utils = require('./utils')
 const file = 'input.txt';
 const invalidLine = '☨'
@@ -215,4 +216,5 @@ this.ReadController(file)
 
 AFD = determiner.process(aAFND, aNT, aT)
 AFD = uselessKiller.process(AFD.aAFD, AFD.aT, AFD.aNT)
+AFD = errorState.map(AFD.aAFD, AFD.aT, AFD.aNT)
 utils.printAF(AFD.aAFD, AFD.aT, AFD.aNT)
