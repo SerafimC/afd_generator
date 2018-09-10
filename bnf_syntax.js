@@ -3,7 +3,7 @@ const determiner = require('./determiner')
 const uselessKiller = require('./uselessKiller')
 const errorState = require('./ErrorState')
 const utils = require('./utils')
-const file = 'input.txt';
+const file = './input.txt';
 const invalidLine = '☨'
 let aFD
 let aAFND = Array(0), // Starts with the initial state
@@ -211,10 +211,37 @@ function add_finalState() {
     aAFND.push([{ symbolName: 'ε', transition: '' }])
 }
 
-// EXECUTION
-this.ReadController(file)
+function mapTokens(currentState, token) {
+    let state = AFD.aAFD[currentState]
 
-AFD = determiner.process(aAFND, aNT, aT)
-AFD = uselessKiller.process(AFD.aAFD, AFD.aT, AFD.aNT)
-AFD = errorState.map(AFD.aAFD, AFD.aT, AFD.aNT)
-utils.printAF(AFD.aAFD, AFD.aT, AFD.aNT)
+    for (let i = 0; i < state.length; i++) {
+        let nextTransition = state[i].transition;
+
+        if (nextTransition == 'END') {
+            state[i].tokenGenerated = token
+            token = ''
+        }
+
+        if (nextTransition != 'END') {
+            let AfID = AFD.aNT.findIndex((el) => el.ruleName == nextTransition)
+            token += state[i].symbolName
+
+            if (AfID >= 0 && AfID != currentState) {
+                mapTokens.call(this, AfID, token)
+            }
+        }
+
+    }
+}
+
+exports.process = function() {
+    this.ReadController(file)
+    AFD = determiner.process(aAFND, aNT, aT)
+    AFD = uselessKiller.process(AFD.aAFD, AFD.aT, AFD.aNT)
+    AFD = errorState.map(AFD.aAFD, AFD.aT, AFD.aNT)
+    utils.printAF(AFD.aAFD, AFD.aT, AFD.aNT)
+
+    mapTokens.call(this, 0, '')
+
+    return AFD
+}

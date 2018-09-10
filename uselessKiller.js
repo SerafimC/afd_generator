@@ -39,7 +39,7 @@ exports.process = function(aAFD, aT, aNT) {
             if (!utils.check_existence(nextTransition, this.used)) {
                 this.used.push(nextTransition)
             }
-            
+
         }
     }
 }

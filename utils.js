@@ -23,7 +23,7 @@ exports.check_existence = function(cName, aDt) {
 
 exports.printAF = function(aAF, aT, aNT) {
     let cLn = ''
-    fileService.clear('output.txt')
+    fileService.clear('./output.txt')
     for (let nI = 0; nI < aAF.length; nI++) {
         cLn += '<'
         if (aNT[nI].isFinal) {
@@ -33,7 +33,7 @@ exports.printAF = function(aAF, aT, aNT) {
         for (let nJ = 0; nJ < aAF[nI].length; nJ++) {
             cLn += aAF[nI][nJ].symbolName + '<' + aAF[nI][nJ].transition + '> | '
         }
-        fileService.write('output.txt', cLn);
+        fileService.write('./output.txt', cLn);
         cLn = ''
     }
 }

@@ -9,10 +9,10 @@ exports.open = function(file) {
 
     for (i = 0; i < aRs.length; i++) {
 
-        if (aRs[i] == '\n') {
+        if (aRs[i + 1] == '\n') {
             aTxt.push(aLn)
             aLn = Array(0)
-            i = i + 1;
+            i = i + 2;
         }
         aLn.push(aRs[i])
     }
