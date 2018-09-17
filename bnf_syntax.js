@@ -5,6 +5,7 @@ const errorState = require('./ErrorState')
 const utils = require('./utils')
 const file = './input.txt';
 const invalidLine = '☨'
+var token = ''
 let aFD
 let aAFND = Array(0), // Starts with the initial state
     aNT = Array(0),
@@ -211,26 +212,25 @@ function add_finalState() {
     aAFND.push([{ symbolName: 'ε', transition: '' }])
 }
 
-function mapTokens(currentState, token) {
+function mapTokens(currentState) {
     let state = AFD.aAFD[currentState]
 
     for (let i = 0; i < state.length; i++) {
         let nextTransition = state[i].transition;
 
-        if (nextTransition == 'END') {
+        if (nextTransition == 'END' && nextTransition != "ErrorState") {
             state[i].tokenGenerated = token
             token = ''
         }
 
-        if (nextTransition != 'END') {
+        if (nextTransition != 'END' && nextTransition != "ErrorState") {
             let AfID = AFD.aNT.findIndex((el) => el.ruleName == nextTransition)
             token += state[i].symbolName
 
             if (AfID >= 0 && AfID != currentState) {
-                mapTokens.call(this, AfID, token)
+                mapTokens.call(this, AfID)
             }
         }
-
     }
 }
 
@@ -241,7 +241,7 @@ exports.process = function() {
     AFD = errorState.map(AFD.aAFD, AFD.aT, AFD.aNT)
     utils.printAF(AFD.aAFD, AFD.aT, AFD.aNT)
 
-    mapTokens.call(this, 0, '')
+    //mapTokens.call(this, 0, '')
 
     return AFD
 }

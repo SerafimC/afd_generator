@@ -1,9 +1,10 @@
 const fs = require('fs');
 let aCont, aRs;
-let aLn = Array(0),
-    aTxt = Array(0);
 
 exports.open = function(file) {
+    let aLn = Array(0),
+        aTxt = Array(0);
+
     aCont = fs.readFileSync(file, 'utf8');
     aRs = aCont.split('')
 

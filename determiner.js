@@ -59,6 +59,8 @@ exports.process = function(aAFND, aNT, aT) {
         aAFD.push(Array(0))
 
         add_newRule_transitions(aTransitionRepeat, nI)
+
+        // TODO: Map final new states
     }
 
     function add_newRule_transitions(aTransitionRepeat, nI) {
