@@ -42,6 +42,7 @@ exports.process = function(aAFND, aNT, aT) {
 
     function update_transitions(aTransitionRepeat, nI) {
         let newRule = ''
+        let newState
         let RuleTransitions = Array(0)
         for (let nL = 0; nL < aTransitionRepeat.length; nL++) {
             newRule += aTransitionRepeat[nL].transition + ','
@@ -59,6 +60,14 @@ exports.process = function(aAFND, aNT, aT) {
         aAFD.push(Array(0))
 
         add_newRule_transitions(aTransitionRepeat, nI)
+
+        newState = aAFD[aAFD.length - 1]
+
+        for (i = 0; i < newState.length; i++) {
+            if (newState[i].transition == 'END') {
+                aNT[aNT.length - 1].isFinal = true
+            }
+        }
 
         // TODO: Map final new states
     }
